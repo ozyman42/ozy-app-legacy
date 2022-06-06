@@ -1,0 +1,81 @@
+{
+  "$schema": "..\\..\\node_modules\\nx\\schemas\\project-schema.json",
+  "sourceRoot": "packages/ozy/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/packages/ozy",
+        "index": "packages/ozy/src/index.html",
+        "baseHref": "/",
+        "main": "packages/ozy/src/main.tsx",
+        "polyfills": "packages/ozy/src/polyfills.ts",
+        "tsConfig": "packages/ozy/tsconfig.app.json",
+        "assets": ["packages/ozy/src/favicon.ico", "packages/ozy/src/assets"],
+        "styles": ["packages/ozy/src/styles.css"],
+        "scripts": [],
+        "webpackConfig": "packages/ozy/webpackConfig.js"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "packages/ozy/src/environments/environment.ts",
+              "with": "packages/ozy/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/web:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "ozy:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "ozy:build:development"
+        },
+        "production": {
+          "buildTarget": "ozy:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/ozy/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/ozy"],
+      "options": {
+        "jestConfig": "packages/ozy/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": [],
+  "dependencies": {}
+}
