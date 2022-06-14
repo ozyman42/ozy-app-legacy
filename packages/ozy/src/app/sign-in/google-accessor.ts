@@ -1,3 +1,5 @@
+import { PrivateKey } from "sshpk";
+
 const API_KEY = 'AIzaSyDui6a907Qq3QbRbBc_eIqG7WBdFl117sQ';
 const CLIENT_ID = '688247567407-4418p3lv4vb4p2lp54fjt04kncan6nko.apps.googleusercontent.com';
 const PROJECT_ID = 'ozy-app-352419';
@@ -50,6 +52,8 @@ function epochNow() {
 function minutesFromNow(time: number) {
     return Math.round((time - epochNow()) / 60);
 }
+
+export const clearAccessToken = () => { localStorage.removeItem(LOCAL_STORAGE_ACCESS_TOKEN_KEY); }
 
 export const getAccessTokenIfPresent = (): SuccessAccessTokenResponse | undefined => {
     const tokenString = localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN_KEY);
@@ -120,6 +124,8 @@ export const getFileIdIfPresent = (token?: string): SuccessFileIdResponse | unde
     return undefined;
 }
 
+export const clearFileId = () => { localStorage.removeItem(LOCAL_STORAGE_FILE_ID_KEY); }
+
 export const getFileId = async (token?: string): Promise<FileIdResponse> => {
     const maybeFileId = getFileIdIfPresent(token);
     if (maybeFileId !== undefined) return maybeFileId;
@@ -170,6 +176,35 @@ export const getFileId = async (token?: string): Promise<FileIdResponse> => {
     return CHOSEN;
 }
 
+export enum GetFileErrorCode {
+    NoSuchFile = 'NoSuchFile',
+    OtherError = 'OtherError'
+}
+
+export type GetFileResponse =
+    {type: 'error'; code: GetFileErrorCode; message: string;} |
+    {type: 'success'; contents: string; title: string;};
+
+export const getFileContents = async (fileId: string, token: string): Promise<GetFileResponse> => {
+    const result = await fetch(`https://docs.googleapis.com/v1/documents/${fileId}`, {headers: new Headers({'Authorization': `Bearer ${token}`})});
+    if (result.status === 200) {
+        const {title, body: {content}} = await result.json();
+        const contentBuffer: string[] = [];
+        for (const line of content) {
+            if (line.paragraph === undefined) continue;
+            for (const element of line.paragraph.elements) {
+                if (element.textRun && element.textRun.content) {
+                    contentBuffer.push(element.textRun.content);
+                }
+            }
+        }
+        const contents = contentBuffer.join("");
+        return {type: 'success', contents, title};
+    } else {
+        return {type: 'error', code: GetFileErrorCode.OtherError, message: await result.text()};
+    }
+}
+
 export enum NewFileErrorCode {
     FileAlreadyExists = 'FileAlreadyExists',
     InvalidName = 'InvalidName',
@@ -180,10 +215,34 @@ export type NewFileResponse =
     {type: 'error';   code:   NewFileErrorCode; message: string;} |
     {type: 'success'; fileId: string;};
 
-export const newFile = async (name: string, token: string): Promise<NewFileResponse> => {
-    const result = await fetch(`https://docs.googleapis.com/v1/documents?title=${encodeURIComponent(name)}`, {
+export const newFile = async (name: string, token: string, contents: string): Promise<NewFileResponse> => {
+    const result = await fetch(`https://docs.googleapis.com/v1/documents`, {
         method: 'POST',
-        headers: new Headers({ 'Authorization': `Bearer ${token}` })
+        headers: new Headers({ 'Authorization': `Bearer ${token}`, 'Accept': 'application/json', 'Content-Type': 'application/json' }),
+        body: JSON.stringify({
+            body: {
+                title: name,
+                body: {
+                    content: [
+                        {
+                            startIndex: 0,
+                            endIndex: contents.length,
+                            paragraph: {
+                                elements: [
+                                    {
+                                        startIndex: 0,
+                                        endIndex: contents.length,
+                                        textRun: {
+                                            content: contents
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        })
     });
     if (result.status === 200) {
         const parsed = await result.json();

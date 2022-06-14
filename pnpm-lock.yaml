@@ -19,18 +19,21 @@ importers:
       '@nrwl/web': 14.1.9
       '@nrwl/workspace': 14.1.7
       '@testing-library/react': 13.1.1
+      '@types/crypto-js': ^4.1.1
       '@types/jest': 27.4.1
       '@types/node': 16.11.7
       '@types/react': 18.0.8
       '@types/react-dom': 18.0.3
       '@types/react-router-dom': 5.3.3
       '@types/sshpk': ^1.17.0
+      '@types/uuid': ^8.3.4
       '@typescript-eslint/eslint-plugin': ~5.18.0
       '@typescript-eslint/parser': ~5.18.0
       autoprefixer: ^10.4.7
       babel-jest: 27.5.1
       babel-loader: ^8.2.5
       core-js: ^3.6.5
+      crypto-js: ^4.1.1
       cypress: ^9.1.0
       eslint: ^8.16.0
       eslint-config-prettier: 8.1.0
@@ -43,7 +46,6 @@ importers:
       flowbite-react: ^0.0.25
       googleapis: ^100.0.0
       jest: 27.5.1
-      jwt-decode: ^3.1.2
       node-polyfill-webpack-plugin: ^1.1.4
       nx: 14.1.7
       object-typed: ^1.0.0
@@ -60,6 +62,7 @@ importers:
       ts-node: 9.1.1
       tslib: ^2.3.0
       typescript: ~4.6.2
+      uuid: ^8.3.2
       webpack: ^5.73.0
       zustand: 4.0.0-rc.1
     dependencies:
@@ -67,10 +70,10 @@ importers:
       '@emotion/styled': 11.8.1_d64p6dxsjyhdzoduvtppjgm2vq
       autoprefixer: 10.4.7_postcss@8.4.14
       core-js: 3.22.8
+      crypto-js: 4.1.1
       flowbite: 1.4.7
       flowbite-react: 0.0.25_gdek73wmeocg4h6xkfgjj52vly
       googleapis: 100.0.0
-      jwt-decode: 3.1.2
       object-typed: 1.0.0
       postcss: 8.4.14
       react: 18.1.0
@@ -80,6 +83,7 @@ importers:
       sshpk: 1.17.0
       tailwindcss: 3.0.24_ts-node@9.1.1
       tslib: 2.4.0
+      uuid: 8.3.2
       zustand: 4.0.0-rc.1_react@18.1.0
     devDependencies:
       '@babel/core': 7.18.2
@@ -95,12 +99,14 @@ importers:
       '@nrwl/web': 14.1.9_zz567bjag7xnb7nowd5ecnrvyu
       '@nrwl/workspace': 14.1.7_lp3qedvv2s2y2tbhycleb4asvm
       '@testing-library/react': 13.1.1_ef5jwxihqo6n7gxfmzogljlgcm
+      '@types/crypto-js': 4.1.1
       '@types/jest': 27.4.1
       '@types/node': 16.11.7
       '@types/react': 18.0.8
       '@types/react-dom': 18.0.3
       '@types/react-router-dom': 5.3.3
       '@types/sshpk': 1.17.0
+      '@types/uuid': 8.3.4
       '@typescript-eslint/eslint-plugin': 5.18.0_zp3rxaivm6s2fir2ojh6svqbl4
       '@typescript-eslint/parser': 5.18.0_utdtartgf6fqqgkivzeynh76la
       babel-jest: 27.5.1_@babel+core@7.18.2
@@ -3231,6 +3237,10 @@ packages:
       '@types/node': 17.0.38
     dev: true
 
+  /@types/crypto-js/4.1.1:
+    resolution: {integrity: sha512-BG7fQKZ689HIoc5h+6D2Dgq1fABRa0RbBWKBd9SP/MVRVXROflpm5fhwyATX5duFmbStzyzyycPB8qUYKDH3NA==}
+    dev: true
+
   /@types/eslint-scope/3.7.3:
     resolution: {integrity: sha512-PB3ldyrcnAicT35TWPs5IcwKD8S333HMaa2VVv4+wdvebJkjWuW/xESoB8IwRcog8HYVYamb1g/R31Qv5Bx03g==}
     dependencies:
@@ -3449,6 +3459,10 @@ packages:
 
   /@types/stack-utils/2.0.1:
     resolution: {integrity: sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==}
+    dev: true
+
+  /@types/uuid/8.3.4:
+    resolution: {integrity: sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==}
     dev: true
 
   /@types/ws/8.5.3:
@@ -4974,6 +4988,10 @@ packages:
       randombytes: 2.1.0
       randomfill: 1.0.4
     dev: true
+
+  /crypto-js/4.1.1:
+    resolution: {integrity: sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==}
+    dev: false
 
   /css-declaration-sorter/6.2.2_postcss@8.4.14:
     resolution: {integrity: sha512-Ufadglr88ZLsrvS11gjeu/40Lw74D9Am/Jpr3LlYm5Q4ZP5KdlUhG+6u2EjyXeZcxmZ2h1ebCKngDjolpeLHpg==}
@@ -8056,10 +8074,6 @@ packages:
     dependencies:
       jwa: 2.0.0
       safe-buffer: 5.2.1
-    dev: false
-
-  /jwt-decode/3.1.2:
-    resolution: {integrity: sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==}
     dev: false
 
   /kind-of/6.0.3:

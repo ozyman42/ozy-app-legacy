@@ -6,7 +6,7 @@ import { SignIn } from './sign-in';
 import { Home } from './home';
 
 export function App() {
-  const { signedIn } = useAppState().signedIn.$;
+  const { appData } = useAppState().appData.$;
   const redirectTo = new URLSearchParams(window.location.search).get(REDIRECT_QUERY_PARAM);
   return (
     <div className='h-full flex flex-col'>
@@ -14,14 +14,14 @@ export function App() {
       <div className='flex grow'>
         <Routes>
           <Route path={SIGN_IN_PATH} element={<>
-            { signedIn.key !== undefined && <Navigate to={redirectTo ?? HOME_PATH} replace={true} /> }
+            { appData !== undefined && <Navigate to={redirectTo ?? HOME_PATH} replace={true} /> }
             <SignIn />
           </>} />
           <Route path={HOME_PATH} element={<Home />} />
           {Object.entries(PAGES).map(([page, info]) => (
             <Route path={info.path} element={
               <div>
-                { signedIn.key === undefined && <Navigate to={`${SIGN_IN_PATH}?${REDIRECT_QUERY_PARAM}=${encodeURIComponent(info.path)}`} replace={true} /> }
+                { appData === undefined && <Navigate to={`${SIGN_IN_PATH}?${REDIRECT_QUERY_PARAM}=${encodeURIComponent(info.path)}`} replace={true} /> }
                 <Nav />
                 <info.render />
               </div>

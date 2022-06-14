@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Navbar } from 'flowbite-react';
 import { PAGES, useAppState, SIGN_IN_PATH, HOME_PATH } from './global-state';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export const Nav: React.FC = () => {
-    const { signedIn, signOut } = useAppState().signedIn.signOut.$;
+    const { appData, signOut } = useAppState().appData.signOut.$;
     const location = useLocation();
     const navigate = useNavigate();
     return (
@@ -30,14 +30,14 @@ export const Nav: React.FC = () => {
                         </Navbar.Link>
                     </div>
                 ))}
-                {signedIn.key === undefined && (
+                {appData === undefined && (
                     <div onClick={() => {navigate(SIGN_IN_PATH)}}>
                     <Navbar.Link active={location.pathname === SIGN_IN_PATH}>
                         Sign In
                     </Navbar.Link>
                     </div>
                 )}
-                {signedIn.key !== undefined && (
+                {appData !== undefined && (
                     <Navbar.Link>
                         <div onClick={signOut}>Sign Out</div>
                     </Navbar.Link>
