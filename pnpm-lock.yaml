@@ -53,6 +53,7 @@ importers:
       prettier: ^2.5.1
       react: 18.1.0
       react-dom: 18.1.0
+      react-password-strength-bar: ^0.4.1
       react-router-dom: 6.3.0
       react-test-renderer: 18.1.0
       regenerator-runtime: 0.13.7
@@ -78,6 +79,7 @@ importers:
       postcss: 8.4.14
       react: 18.1.0
       react-dom: 18.1.0_react@18.1.0
+      react-password-strength-bar: 0.4.1_ef5jwxihqo6n7gxfmzogljlgcm
       react-router-dom: 6.3.0_ef5jwxihqo6n7gxfmzogljlgcm
       regenerator-runtime: 0.13.7
       sshpk: 1.17.0
@@ -9768,6 +9770,17 @@ packages:
     resolution: {integrity: sha512-Fl7FuabXsJnV5Q1qIOQwx/sagGF18kogb4gpfcG4gjLBWO0WDiiz1ko/ExayuxE7InyQkBLkxRFG5oxY6Uu3Kg==}
     dev: true
 
+  /react-password-strength-bar/0.4.1_ef5jwxihqo6n7gxfmzogljlgcm:
+    resolution: {integrity: sha512-2NvYz4IUU8k7KDZgsXKoJWreKCZLKGaqF5QhIVhc09OsPBFXFMh0BeghNkBIRkaxLeI7/xjivknDCYfluBCXKA==}
+    peerDependencies:
+      react: '>=16.8.6'
+      react-dom: '>=16.8.6'
+    dependencies:
+      react: 18.1.0
+      react-dom: 18.1.0_react@18.1.0
+      zxcvbn: 4.4.2
+    dev: false
+
   /react-refresh/0.10.0:
     resolution: {integrity: sha512-PgidR3wST3dDYKr6b4pJoqQFpPGNKDSCDx4cZoshjXipw3LzO7mG1My2pwEzz2JVkF+inx3xRpDeQLFQGH/hsQ==}
     engines: {node: '>=0.10.0'}
@@ -11703,4 +11716,8 @@ packages:
     dependencies:
       react: 18.1.0
       use-sync-external-store: 1.1.0_react@18.1.0
+    dev: false
+
+  /zxcvbn/4.4.2:
+    resolution: {integrity: sha512-Bq0B+ixT/DMyG8kgX2xWcI5jUvCwqrMxSFam7m0lAf78nf04hv6lNCsyLYdyYTrCVMqNDY/206K7eExYCeSyUQ==}
     dev: false
