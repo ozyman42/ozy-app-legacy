@@ -19,13 +19,11 @@ importers:
       '@nrwl/web': 14.1.9
       '@nrwl/workspace': 14.1.7
       '@testing-library/react': 13.1.1
-      '@types/crypto-js': ^4.1.1
       '@types/jest': 27.4.1
       '@types/node': 16.11.7
       '@types/react': 18.0.8
       '@types/react-dom': 18.0.3
       '@types/react-router-dom': 5.3.3
-      '@types/sshpk': ^1.17.0
       '@types/uuid': ^8.3.4
       '@typescript-eslint/eslint-plugin': ~5.18.0
       '@typescript-eslint/parser': ~5.18.0
@@ -33,7 +31,6 @@ importers:
       babel-jest: 27.5.1
       babel-loader: ^8.2.5
       core-js: ^3.6.5
-      crypto-js: ^4.1.1
       cypress: ^9.1.0
       eslint: ^8.16.0
       eslint-config-prettier: 8.1.0
@@ -57,7 +54,6 @@ importers:
       react-router-dom: 6.3.0
       react-test-renderer: 18.1.0
       regenerator-runtime: 0.13.7
-      sshpk: ^1.17.0
       tailwindcss: ^3.0.24
       ts-jest: 27.1.4
       ts-node: 9.1.1
@@ -71,7 +67,6 @@ importers:
       '@emotion/styled': 11.8.1_d64p6dxsjyhdzoduvtppjgm2vq
       autoprefixer: 10.4.7_postcss@8.4.14
       core-js: 3.22.8
-      crypto-js: 4.1.1
       flowbite: 1.4.7
       flowbite-react: 0.0.25_gdek73wmeocg4h6xkfgjj52vly
       googleapis: 100.0.0
@@ -82,7 +77,6 @@ importers:
       react-password-strength-bar: 0.4.1_ef5jwxihqo6n7gxfmzogljlgcm
       react-router-dom: 6.3.0_ef5jwxihqo6n7gxfmzogljlgcm
       regenerator-runtime: 0.13.7
-      sshpk: 1.17.0
       tailwindcss: 3.0.24_ts-node@9.1.1
       tslib: 2.4.0
       uuid: 8.3.2
@@ -101,13 +95,11 @@ importers:
       '@nrwl/web': 14.1.9_zz567bjag7xnb7nowd5ecnrvyu
       '@nrwl/workspace': 14.1.7_lp3qedvv2s2y2tbhycleb4asvm
       '@testing-library/react': 13.1.1_ef5jwxihqo6n7gxfmzogljlgcm
-      '@types/crypto-js': 4.1.1
       '@types/jest': 27.4.1
       '@types/node': 16.11.7
       '@types/react': 18.0.8
       '@types/react-dom': 18.0.3
       '@types/react-router-dom': 5.3.3
-      '@types/sshpk': 1.17.0
       '@types/uuid': 8.3.4
       '@typescript-eslint/eslint-plugin': 5.18.0_zp3rxaivm6s2fir2ojh6svqbl4
       '@typescript-eslint/parser': 5.18.0_utdtartgf6fqqgkivzeynh76la
@@ -3178,12 +3170,6 @@ packages:
     resolution: {integrity: sha512-HnYpAE1Y6kRyKM/XkEuiRQhTHvkzMBurTHnpFLYLBGPIylZNPs9jJcuOOYWxPLJCSEtmZT0Y8rHDokKN7rRTig==}
     dev: true
 
-  /@types/asn1/0.2.0:
-    resolution: {integrity: sha512-5TMxIpYbIA9c1J0hYQjQDX3wr+rTgQEAXaW2BI8ECM8FO53wSW4HFZplTalrKSHuZUc76NtXcePRhwuOHqGD5g==}
-    dependencies:
-      '@types/node': 17.0.38
-    dev: true
-
   /@types/babel__core/7.1.19:
     resolution: {integrity: sha512-WEOTgRsbYkvA/KCsDwVEGkd7WAr1e3g31VHQ8zy5gul/V1qKullU/BU5I68X5v7V3GnB9eotmom4v5a5gjxorw==}
     dependencies:
@@ -3237,10 +3223,6 @@ packages:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
       '@types/node': 17.0.38
-    dev: true
-
-  /@types/crypto-js/4.1.1:
-    resolution: {integrity: sha512-BG7fQKZ689HIoc5h+6D2Dgq1fABRa0RbBWKBd9SP/MVRVXROflpm5fhwyATX5duFmbStzyzyycPB8qUYKDH3NA==}
     dev: true
 
   /@types/eslint-scope/3.7.3:
@@ -3449,13 +3431,6 @@ packages:
   /@types/sockjs/0.3.33:
     resolution: {integrity: sha512-f0KEEe05NvUnat+boPTZ0dgaLZ4SfSouXUgv5noUiefG2ajgKjmETo9ZJyuqsl7dfl2aHlLJUiki6B4ZYldiiw==}
     dependencies:
-      '@types/node': 17.0.38
-    dev: true
-
-  /@types/sshpk/1.17.0:
-    resolution: {integrity: sha512-yHxVn9o5r9g4qd6HByA3ydIdHGzxw5NFQCwY7uS4aM1b4RLnexdtLwp08Dq5n0W/asrDpvbX0+C+tzep4tVDZQ==}
-    dependencies:
-      '@types/asn1': 0.2.0
       '@types/node': 17.0.38
     dev: true
 
@@ -4044,10 +4019,12 @@ packages:
     resolution: {integrity: sha512-ix/FxPn0MDjeyJ7i/yoHGFt/EX6LyNbxSEhPPXODPL+KB0VPk86UYfL0lMdy+KCnv+fmvIzySwaK5COwqVbWTQ==}
     dependencies:
       safer-buffer: 2.1.2
+    dev: true
 
   /assert-plus/1.0.0:
     resolution: {integrity: sha512-NfJ4UzBCcQGLDlQq7nHxH+tv3kyZ0hHQqF5BO6J7tNJeP5do1llPr8dZ8zHonfhAu0PHAdMkSo+8o0wxg9lZWw==}
     engines: {node: '>=0.8'}
+    dev: true
 
   /assert/2.0.0:
     resolution: {integrity: sha512-se5Cd+js9dXJnu6Ag2JFc00t+HmHOen+8Q+L7O9zI0PqQXr20uk2J0XQqMxZEeo5U50o8Nvmmx7dZrl+Ufr35A==}
@@ -4311,6 +4288,7 @@ packages:
     resolution: {integrity: sha512-qeFIXtP4MSoi6NLqO12WfqARWWuCKi2Rn/9hJLEmtB5yTNr9DqFWkJRCf2qShWzPeAMRnOgCrq0sg/KLv5ES9w==}
     dependencies:
       tweetnacl: 0.14.5
+    dev: true
 
   /big.js/5.2.2:
     resolution: {integrity: sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==}
@@ -4991,10 +4969,6 @@ packages:
       randomfill: 1.0.4
     dev: true
 
-  /crypto-js/4.1.1:
-    resolution: {integrity: sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==}
-    dev: false
-
   /css-declaration-sorter/6.2.2_postcss@8.4.14:
     resolution: {integrity: sha512-Ufadglr88ZLsrvS11gjeu/40Lw74D9Am/Jpr3LlYm5Q4ZP5KdlUhG+6u2EjyXeZcxmZ2h1ebCKngDjolpeLHpg==}
     engines: {node: ^10 || ^12 || >=14}
@@ -5228,6 +5202,7 @@ packages:
     engines: {node: '>=0.10'}
     dependencies:
       assert-plus: 1.0.0
+    dev: true
 
   /data-urls/2.0.0:
     resolution: {integrity: sha512-X5eWTSXO/BJmpdIKCRuKUgSCgAN0OwliVK3yPKbwIWU1Tdw5BRajxlzMidvh+gwko9AfQ9zIj52pzF91Q3YAvQ==}
@@ -5525,6 +5500,7 @@ packages:
     dependencies:
       jsbn: 0.1.1
       safer-buffer: 2.1.2
+    dev: true
 
   /ecdsa-sig-formatter/1.0.11:
     resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}
@@ -6607,6 +6583,7 @@ packages:
     resolution: {integrity: sha512-0fzj9JxOLfJ+XGLhR8ze3unN0KZCgZwiSSDz168VERjK8Wl8kVSdcu2kspd4s4wtAa1y/qrVRiAA0WclVsu0ng==}
     dependencies:
       assert-plus: 1.0.0
+    dev: true
 
   /glob-parent/5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
@@ -7933,6 +7910,7 @@ packages:
 
   /jsbn/0.1.1:
     resolution: {integrity: sha512-UVU9dibq2JcFWxQPA6KCqj5O42VOmAY3zQUfEKxU0KpTGXwNoCjkX1e13eHNvw/xPynt6pU0rZ1htjWTNTSXsg==}
+    dev: true
 
   /jsdom/16.7.0:
     resolution: {integrity: sha512-u9Smc2G1USStM+s/x1ru5Sxrl6mPYCbByG1U/hUmqaVsm4tbNyS7CicOSRyuGQYZhTu0h84qkZZQ/I+dzizSVw==}
@@ -10130,6 +10108,7 @@ packages:
 
   /safer-buffer/2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+    dev: true
 
   /sass-loader/12.6.0_sass@1.52.2+webpack@5.73.0:
     resolution: {integrity: sha512-oLTaH0YCtX4cfnJZxKSLAyglED0naiYfNG1iXfU5w1LNZ+ukoA5DtyDIN5zmKVZwYNJP4KRc5Y3hkWga+7tYfA==}
@@ -10506,6 +10485,7 @@ packages:
       jsbn: 0.1.1
       safer-buffer: 2.1.2
       tweetnacl: 0.14.5
+    dev: true
 
   /stable/0.1.8:
     resolution: {integrity: sha512-ji9qxRnOVfcuLDySj9qzhGSEFVobyt1kIOSkj1qZzYLzq7Tos/oUUWvotUPQLlrsidqsK6tBH89Bc9kL5zHA6w==}
@@ -11064,6 +11044,7 @@ packages:
 
   /tweetnacl/0.14.5:
     resolution: {integrity: sha1-WuaBd/GS1EViadEIr6k/+HQ/T2Q=}
+    dev: true
 
   /type-check/0.3.2:
     resolution: {integrity: sha1-WITKtRLPHTVeP7eE8wgEsrUg23I=}

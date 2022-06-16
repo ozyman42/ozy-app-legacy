@@ -7,8 +7,7 @@ import { Budget } from './budget';
 import create from 'zustand';
 import { useStoreSelector } from './utils/zustand';
 import { AppData, getAppData, ParseError, ParseResponse, SubApp } from "./app-data";
-import uuid from 'uuid';
-import { clearAccessToken, clearFileId } from "./sign-in/google-accessor";
+import { clearAccessToken, GoogleUser } from "./sign-in/google-accessor";
 
 export type PageInfo = {
     linkLabel: string;
@@ -17,7 +16,7 @@ export type PageInfo = {
 }
 
 export const HOME_PATH = '/';
-export const SIGN_IN_PATH = '/sign-in';
+export const SIGN_IN_PATH = '/account';
 export const REDIRECT_QUERY_PARAM = 'redirect';
 
 export const PAGES: {[app in SubApp]: PageInfo} = {
@@ -48,14 +47,43 @@ export const PAGES: {[app in SubApp]: PageInfo} = {
     }
 }
 
+export enum EncryptPasswordMethod {
+    Metamask = "Metamask",
+    Fingerprint = "Fingerprint"
+}
+
+export type SignInData = {
+    googleUser: GoogleUser | undefined;
+    databaseFileId: string | undefined;
+    databaseFileName: string | undefined;
+    password: string | undefined;
+    encryptPasswordMethod: EncryptPasswordMethod | undefined;
+}
+
+export enum SignInError {
+    BadPassword = 'BadPassword',
+    Other = "Other"
+}
+
+export type SignInResult = 
+    {success: true} |
+    {success: false; code: SignInError; details: string;};
+
 export type AppState = {
-    parseResponseCode: ParseError | undefined;
-    refreshing: string | undefined;
-    saving: string | undefined;
+    appData?: AppData;
+    notifications: {
+        id: string;
+        closed: boolean;
+        expiresAt: number | undefined;
+        text: string;
+        type: 'error' | 'warning' | 'success' | 'progress'
+    }[];
+    ingestedRevisions: Record<string, string>; // 
+    signInData: SignInData;
+    changePassword: (newPassword: string) => Promise<void>;
     signOut: () => void;
-    signIn: (keyPassword: string) => void;
+    signIn: (data: Partial<SignInData>) => Promise<SignInResult>;
     save: () => Promise<void>;
-    appData?: AppData
 }
 
 export enum SaveError {
@@ -64,63 +92,65 @@ export enum SaveError {
     APIError = "APIError"
 }
 
+export function isSignedIn({ googleUser, databaseFileId, password, databaseFileName }: SignInData) {
+    return googleUser !== undefined && databaseFileId !== undefined && databaseFileName !== undefined && password !== undefined;
+}
+
+const SIGN_OUT_DATA: SignInData = {
+    googleUser: undefined,
+    databaseFileId: undefined,
+    databaseFileName: undefined,
+    password: undefined,
+    encryptPasswordMethod: undefined
+};
+
 export const useStore = create<AppState>((set, get) => {
-    let interval: number | undefined = undefined;
     let minSaveTime = Date.now(); // Every time some local state update occurs, we move this to now + 5 seconds.
-    let lastSynced = "";
-    setInterval(() => {
+    const globalWindow = (window as any);
+    if (globalWindow.interval !== undefined) {
+        clearInterval(globalWindow.interval);
+    }
+    const interval = setInterval(() => {
         if (Date.now() < minSaveTime) {
             
         }
+        // First refresh, then if no change, save
     }, 5000);
+    globalWindow.interval = interval;
     return {
         appData: undefined,
-        parseResponseCode: undefined,
-        saving: undefined,
-        refreshing: undefined,
-        signIn: (keyPassword: string) => {
-            function handleResponse(parseResponse: ParseResponse) {
-                if (parseResponse.successful) {
-                    set({appData: parseResponse.data});
-                } else {
-                    console.log("Problem parsing. Code", parseResponse.code, "message", parseResponse.details);
-                    if (interval !== undefined) {
-                        clearInterval(interval);
-                        interval = undefined;
-                    }
-                    set({refreshing: undefined, parseResponseCode: parseResponse.code});
+        notifications: [],
+        signInData: SIGN_OUT_DATA,
+        ingestedRevisions: {},
+        changePassword: async newPassword => {
+
+        },
+        signIn: async (signInData) => {
+            const newSignInData: SignInData = {...get().signInData, ...signInData};
+            if (!isSignedIn(newSignInData)) {
+                set({signInData: newSignInData});
+                return {success: true};
+            }
+            const parsed = await getAppData(newSignInData);
+            if (!parsed.successful) {
+                switch (parsed.code) {
+                    case ParseError.BadPassword:
+                        return {success: false, code: SignInError.BadPassword, details: parsed.details};
+                    default:
+                        console.log("got unexpected parse error");
+                        console.log(parsed);
+                        return {success: false, code: SignInError.Other, details: parsed.details};
                 }
             }
-            return;
-            getAppData(keyPassword).then(response => {
-                handleResponse(response);
-                if (response.successful) {
-                    interval = window.setInterval(async () => {
-                        if (interval === undefined) return;
-                        const { appData, refreshing } = get();
-                        if (refreshing !== undefined || appData === undefined) return;
-                        const refreshId = uuid.v4();
-                        set({refreshing: refreshId});
-                        const response = await getAppData(keyPassword);
-                        const { appData: latestAppData, refreshing: latestRefreshing } = get();
-                        if (latestRefreshing !== refreshId) return;
-                        if (latestRefreshing === refreshId) {
-                            set({refreshing: undefined});
-                        }
-                        if (latestAppData === undefined) return;
-                        handleResponse(response);
-                    }, 5000);
-                }
-            });
+            const newIngested: Record<string, string> = 
+                {...get().ingestedRevisions, [parsed.data.revision]: newSignInData.password!};
+            set({signInData: newSignInData, appData: parsed.data, ingestedRevisions: newIngested});
+            return {success: true};
         },
         signOut: () => {
-            if (interval !== undefined) {
-                clearInterval(interval);
-                interval = undefined;
-            }
-            clearFileId();
+            console.log("sign out request");
             clearAccessToken();
-            set({appData: undefined, refreshing: undefined});
+            set({appData: undefined, signInData: SIGN_OUT_DATA});
         },
         save: async () => {
 
