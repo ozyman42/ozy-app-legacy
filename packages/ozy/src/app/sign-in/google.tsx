@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Button, Badge, TextInput, Avatar } from 'flowbite-react';
 import { clearAccessToken, clearFileId, FileIdErrorCode, getAccessToken, getAccessTokenIfPresent,
-    getFileContents, getFileId, getFileIdIfPresent, GoogleUser, newFile } from "./google-accessor";
+    getFileContents, getFile, getFileIdIfPresent, GoogleUser, newFile } from "./google-accessor";
 import { DocumentAppState, generateBlankDocumentAppState, validateDocumentAppState } from "../app-data";
 import PasswordStrengthBar from 'react-password-strength-bar';
 import { EncryptPasswordMethod, SignInData, useAppState } from "../global-state";
@@ -77,6 +77,7 @@ export const GoogleSignIn: React.FC = () => {
         if (user === undefined) return;
         const maybeFileId = getFileIdIfPresent(user.userID);
         if (maybeFileId !== undefined) {
+            console.log("load file id if present");
             const response = await getFileContents(maybeFileId, user.accessToken);
             if (response.type === 'error') {
                 console.log("Error fetching file.", response.code, response.message);
@@ -155,7 +156,7 @@ export const GoogleSignIn: React.FC = () => {
     }
 
     async function selectFile(user: GoogleUser) {
-        const fileIdResponse = await getFileId(user);
+        const fileIdResponse = await getFile(user);
         if (fileIdResponse.type === 'error') {
             if (fileIdResponse.code === FileIdErrorCode.Cancelled) return;
             setError(`Unable to fetch file id: ${fileIdResponse.code}`);

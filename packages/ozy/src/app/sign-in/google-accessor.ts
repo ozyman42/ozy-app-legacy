@@ -138,19 +138,24 @@ export enum FileIdErrorCode {
     UserMismatch = 'UserMismatch'
 }
 
+export type FileRecord = {
+    fileId: string;
+    fileName: string;
+}
+
 export type SuccessFileIdResponse = {
     type: 'success';
-    fileId: string;
+    fileId: FileRecord;
 }
 
 export type FileIdResponse = 
     {type: "error"; code: FileIdErrorCode;} |
     SuccessFileIdResponse;
 
-export const getFileIdIfPresent = (userId: string): string | undefined => {
+export const getFileIdIfPresent = (userId: string): FileRecord | undefined => {
     const maybeFileId = localStorage.getItem(LOCAL_STORAGE_FILE_ID_KEY);
     if (maybeFileId === null) return undefined;
-    const fileIdByUserId: Record<string, string> = JSON.parse(maybeFileId);
+    const fileIdByUserId: Record<string, FileRecord> = JSON.parse(maybeFileId);
     if (fileIdByUserId[userId] === undefined) return undefined;
     return fileIdByUserId[userId];
 }
@@ -159,7 +164,7 @@ export const clearFileId = (userId?: string) => {
     if (userId !== undefined) {
         const maybeFileId = localStorage.getItem(LOCAL_STORAGE_FILE_ID_KEY);
         if (maybeFileId === null) return;
-        const fileIdByUserId: Record<string, string> = JSON.parse(maybeFileId);
+        const fileIdByUserId: Record<string, FileRecord> = JSON.parse(maybeFileId);
         delete fileIdByUserId[userId];
         localStorage.setItem(LOCAL_STORAGE_FILE_ID_KEY, JSON.stringify(fileIdByUserId));
     } else {
@@ -167,7 +172,7 @@ export const clearFileId = (userId?: string) => {
     }
 }
 
-export const getFileId = async (user: GoogleUser): Promise<FileIdResponse> => {
+export const getFile = async (user: GoogleUser): Promise<FileIdResponse> => {
     const maybeFileId = getFileIdIfPresent(user.userID);
     if (maybeFileId !== undefined) return {type: 'success', fileId: maybeFileId};
     await new Promise(callback => { gapi.load('picker', {callback}) });
@@ -256,12 +261,17 @@ function readDocumentResponse(parsed: {title: string, body: any}) {
     return {title, contents};
 }
 
+function getDocumentURI(fileId: string) {
+    return `https://docs.googleapis.com/v1/documents/${fileId}`;
+}
+
 export const getFileContents = async (fileId: string, token: string): Promise<GetFileResponse> => {
-    const result = await fetch(`https://docs.googleapis.com/v1/documents/${fileId}`, {headers: new Headers({'Authorization': `Bearer ${token}`})});
+    const result = await fetch(getDocumentURI(fileId), {headers: new Headers({'Authorization': `Bearer ${token}`})});
     if (result.status === 200) {
         const parsedResult = await result.json();
         console.log("got read result");
         console.log(parsedResult);
+        console.trace();
         const { title, contents } = readDocumentResponse(parsedResult);
         return {type: 'success', contents, title};
     } else {
@@ -279,6 +289,10 @@ export type NewFileResponse =
     {type: 'error';   code:   NewFileErrorCode; message: string;} |
     {type: 'success'; fileId: string;};
 
+function getDocumentBatchUpdateURI(fileId: string) {
+    return `${getDocumentURI(fileId)}:batchUpdate`;
+}
+
 export const newFile = async (name: string, user: GoogleUser, contents: string): Promise<NewFileResponse> => {
     const result = await fetch(`https://docs.googleapis.com/v1/documents`, {
         method: 'POST',
@@ -289,8 +303,9 @@ export const newFile = async (name: string, user: GoogleUser, contents: string):
         return {type: 'error', code: NewFileErrorCode.OtherError, message: await result.text()};
     }
     const parsed = await result.json();
+    console.log("parsed", parsed);
     const fileId = parsed.documentId;
-    const updateResult = await fetch(`https://docs.googleapis.com/v1/documents/${fileId}:batchUpdate`, {
+    const updateResult = await fetch(getDocumentBatchUpdateURI(fileId), {
         method: 'POST',
         headers: new Headers({ 'Authorization': `Bearer ${user.accessToken}`, 'Accept': 'application/json', 'Content-Type': 'application/json' }),
         body: JSON.stringify({
@@ -303,31 +318,36 @@ export const newFile = async (name: string, user: GoogleUser, contents: string):
                         }
                     }
                 },
-                /*{
-                    deleteContentRange: {
+                {
+                    updateTextStyle: {
+                        textStyle: {
+                            fontSize: {
+                                magnitude: 8,
+                                unit: "PT"
+                            },
+                            weightedFontFamily: {
+                                fontFamily: "Roboto Mono",
+                                weight: 400
+                            }
+                        },
+                        fields: "*",
                         range: {
                             startIndex: 1,
                             endIndex: contents.length + 2
                         }
                     }
-                }*/
-            ]
+                }
+            ],
+            // TODO: use google doc revision
         })
     });
-    if (updateResult.status !== 200) {
-        return {type: 'error', code: NewFileErrorCode.OtherError, message: await updateResult.text()};
+    const updateResultStatus = updateResult.status;
+    const updateResultBody = await updateResult.text();
+    console.log("got update result");
+    console.log(updateResultBody);
+    if (updateResultStatus !== 200) {
+        return {type: 'error', code: NewFileErrorCode.OtherError, message: updateResultBody};
     }
-
-    const read = await getFileContents(fileId, user.accessToken);
-    if (read.type === 'error') {
-        console.log('bad');
-        console.log(read);
-        return {type: 'error', code: NewFileErrorCode.OtherError, message: ''};
-    }
-    console.log("from response", read.contents.length, "from arguments", contents.length);
-    console.log(JSON.stringify(read.contents));
-    console.log(JSON.stringify(contents));
-
     const maybeFiles = localStorage.getItem(LOCAL_STORAGE_FILE_ID_KEY);
     if (maybeFiles === null) {
         localStorage.setItem(LOCAL_STORAGE_FILE_ID_KEY, JSON.stringify({[user.userID]: fileId}));
@@ -339,6 +359,82 @@ export const newFile = async (name: string, user: GoogleUser, contents: string):
     return {type: 'success', fileId};
 }
 
-export function updateContent(user: GoogleUser, fileId: string) {
-    const 
+export enum UpdateFileError {
+    FailedToFetchFile = 'FailedToFetchFile',
+    FailedToUpdate = 'FailedToUpdate'
+}
+
+export type UpdateFileResponse =
+    {success: true} |
+    {success: false; code: UpdateFileError; details: string};
+
+export async function updateContent(user: GoogleUser, fileId: string, newContent: string): Promise<UpdateFileResponse> {
+    const read = await getFileContents(fileId, user.accessToken);
+    if (read.type === 'error') {
+        return {
+            success: false, code: UpdateFileError.FailedToFetchFile,
+            details: `Failed to fetch file due to ${read.code}: ${read.message}`
+        };
+    }
+    const updateResult = await fetch(getDocumentBatchUpdateURI(fileId), {
+        method: 'POST',
+        headers: new Headers({ 'Authorization': `Bearer ${user.accessToken}`, 'Accept': 'application/json', 'Content-Type': 'application/json' }),
+        body: JSON.stringify({
+            requests: [
+                {
+                    deleteContentRange: {
+                        range: {
+                            startIndex: 1,
+                            endIndex: read.contents.length + 1
+                        }
+                    }
+                },
+                {
+                    insertText: {
+                        text: newContent,
+                        location: {
+                            index: 1
+                        }
+                    }
+                },
+                {
+                    updateTextStyle: {
+                        textStyle: {
+                            fontSize: {
+                                magnitude: 8,
+                                unit: "PT"
+                            },
+                            weightedFontFamily: {
+                                fontFamily: "Roboto Mono",
+                                weight: 400
+                            }
+                        },
+                        fields: "*",
+                        range: {
+                            startIndex: 1,
+                            endIndex: newContent.length + 2
+                        }
+                    }
+                }
+            ]
+        })
+    });
+    if (updateResult.status !== 200) {
+        return {
+            success: false, code: UpdateFileError.FailedToUpdate,
+            details: `Failed to update file ${await updateResult.text()}`
+        }
+    }
+    console.log("got update result");
+    console.log(await updateResult.text());
+    console.log("performing second read");
+    const anotherRead = await getFileContents(fileId, user.accessToken);
+    if (anotherRead.type === 'error') {
+        return {
+            success: false, code: UpdateFileError.FailedToFetchFile,
+            details: `Failed second read due to ${anotherRead.code}: ${anotherRead.message}`
+        };
+    }
+    console.log("second read completed");
+    return {success: true};
 }

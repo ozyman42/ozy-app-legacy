@@ -104,6 +104,16 @@ const SIGN_OUT_DATA: SignInData = {
     encryptPasswordMethod: undefined
 };
 
+function equals(one: SignInData, two: SignInData) {
+    return (
+        one.databaseFileId === two.databaseFileId &&
+        one.databaseFileName === two.databaseFileName &&
+        one.encryptPasswordMethod === two.encryptPasswordMethod &&
+        one.password === two.password &&
+        one.googleUser?.accessToken === two.googleUser?.accessToken
+    );
+}
+
 export const useStore = create<AppState>((set, get) => {
     let minSaveTime = Date.now(); // Every time some local state update occurs, we move this to now + 5 seconds.
     const globalWindow = (window as any);
@@ -126,8 +136,9 @@ export const useStore = create<AppState>((set, get) => {
 
         },
         signIn: async (signInData) => {
-            const newSignInData: SignInData = {...get().signInData, ...signInData};
-            if (!isSignedIn(newSignInData)) {
+            const existingSignInData = get().signInData;
+            const newSignInData: SignInData = {...existingSignInData, ...signInData};
+            if (!isSignedIn(newSignInData) || equals(existingSignInData, newSignInData)) {
                 set({signInData: newSignInData});
                 return {success: true};
             }

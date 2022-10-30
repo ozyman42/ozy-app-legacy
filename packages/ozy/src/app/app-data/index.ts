@@ -90,6 +90,7 @@ export function validateDocumentAppState(fileContents: string) {
 }
 
 export async function getAppData(signInData: SignInData): Promise<ParseResponse> {
+    console.log("get app data called");
     const {password, googleUser, databaseFileId} = signInData;
     if (password === undefined) return {successful: false, code: ParseError.BadPassword, details: 'no password entered'};
     if (googleUser === undefined) return {successful: false, code: ParseError.NoUser, details: 'no user signed in'};
